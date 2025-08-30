@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de División - Cifras Personalizadas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .division-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .division-symbol {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .cifras-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        #cifrasInput {
+            width: 100px;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(86, 171, 47, 0.3);
+        }
+
+        .btn-copy:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            word-break: break-all;
+            line-height: 1.5;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .division-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧮 Calculadora de División</h1>
+        
+        <div class="input-group">
+            <label>División:</label>
+            <div class="division-container">
+                <input type="number" id="dividendo" placeholder="Dividendo (ej: 90)" step="any">
+                <span class="division-symbol">÷</span>
+                <input type="number" id="divisor" placeholder="Divisor (ej: 1220)" step="any">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="cifras-group">
+                <label for="cifrasInput">Cifras a copiar:</label>
+                <input type="number" id="cifrasInput" min="1" max="100" value="10" placeholder="10">
+                <span style="color: #666; font-size: 14px;">(máx. 100)</span>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn-calculate" onclick="calcular()">📊 Calcular</button>
+            <button class="btn-copy" id="copyBtn" onclick="copiarCifras()" disabled>📋 Copiar Cifras</button>
+        </div>
+
+        <div class="result-container" id="resultContainer" style="display: none;">
+            <div class="result-label">Resultado completo:</div>
+            <div class="result-value" id="resultValue"></div>
+            
+            <div class="result-label" style="margin-top: 20px;">Cifras decimales:</div>
+            <div class="result-value" id="decimalValue"></div>
+        </div>
+
+        <div class="info-text">
+            💡 Ingresa dos números para dividir y especifica cuántas cifras decimales quieres copiar
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        let resultadoCompleto = '';
+        let cifrasDecimales = '';
+
+        function calcular() {
+            const dividendo = parseFloat(document.getElementById('dividendo').value);
+            const divisor = parseFloat(document.getElementById('divisor').value);
+            
+            if (isNaN(dividendo) || isNaN(divisor)) {
+                mostrarNotificacion('Por favor ingresa números válidos', 'error');
+                return;
+            }
+            
+            if (divisor === 0) {
+                mostrarNotificacion('No se puede dividir por cero', 'error');
+                return;
+            }
+
+            // Realizar división usando algoritmo de división larga para mayor precisión
+            let parteEntera = Math.floor(dividendo / divisor);
+            let resto = dividendo - (parteEntera * divisor);
+            
+            // Calcular hasta 100 cifras decimales usando división larga
+            let decimales = '';
+            let visitados = new Map(); // Para detectar repeticiones
+            
+            for (let i = 0; i < 100 && resto !== 0; i++) {
+                resto *= 10;
+                
+                // Verificar si ya hemos visto este resto (decimal periódico)
+                if (visitados.has(resto)) {
+                    break;
+                }
+                visitados.set(resto, i);
+                
+                let digito = Math.floor(resto / divisor);
+                decimales += digito;
+                resto = resto - (digito * divisor);
+            }
+            
+            // Si no hay decimales, usar '0'
+            if (decimales === '') {
+                decimales = '0';
+            }
+            
+            resultadoCompleto = decimales;
+            cifrasDecimales = decimales;
+            
+            // Mostrar resultados
+            const resultContainer = document.getElementById('resultContainer');
+            const resultValue = document.getElementById('resultValue');
+            const decimalValue = document.getElementById('decimalValue');
+            
+            const resultadoOriginal = dividendo / divisor;
+            const resultadoMostrar = parteEntera + '.' + decimales.substring(0, 20); // Mostrar solo las primeras 20 cifras
+            
+            resultValue.textContent = `${resultadoOriginal.toString()} (aproximado)`;
+            decimalValue.textContent = decimales;
+            
+            resultContainer.style.display = 'block';
+            document.getElementById('copyBtn').disabled = false;
+            
+            mostrarNotificacion('¡Cálculo realizado exitosamente!', 'success');
+        }
+
+        function copiarCifras() {
+            const numCifras = parseInt(document.getElementById('cifrasInput').value);
+            
+            if (isNaN(numCifras) || numCifras < 1 || numCifras > 100) {
+                mostrarNotificacion('Por favor ingresa un número entre 1 y 100', 'error');
+                return;
+            }
+            
+            if (!cifrasDecimales) {
+                mostrarNotificacion('Primero debes calcular una división', 'error');
+                return;
+            }
+            
+            // Obtener las cifras solicitadas
+            let cifrasACopiar = cifrasDecimales.substring(0, numCifras);
+            
+            // Si no hay suficientes cifras, rellenar con ceros
+            while (cifrasACopiar.length < numCifras) {
+                cifrasACopiar += '0';
+            }
+            
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(cifrasACopiar).then(() => {
+                mostrarNotificacion(`¡${numCifras} cifras copiadas al portapapeles!`, 'success');
+            }).catch(() => {
+                // Fallback para navegadores que no soporten clipboard API
+                const textarea = document.createElement('textarea');
+                textarea.value = cifrasACopiar;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                mostrarNotificacion(`¡${numCifras} cifras copiadas al portapapeles!`, 'success');
+            });
+        }
+
+        function mostrarNotificacion(mensaje, tipo) {
+            const notification = document.getElementById('notification');
+            notification.textContent = mensaje;
+            notification.className = `notification ${tipo}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Permitir cálculo con Enter
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calcular();
+            }
+        });
+
+        // Validar input de cifras
+        document.getElementById('cifrasInput').addEventListener('input', function(e) {
+            let value = parseInt(e.target.value);
+            if (value > 100) {
+                e.target.value = 100;
+            }
+            if (value < 1) {
+                e.target.value = 1;
+            }
+        });
+    </script>
+</body>
+</html>
